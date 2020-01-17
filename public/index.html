@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Collaborative canvas</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/bootstrap-colorpalette.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="socket.io/socket.io.js"></script>
+    <script src="js/bootstrap-colorpalette.js"></script>
+    <script src="js/FileSaver.js"></script>
+    <script src="js/board.js"></script>
+    <script src="js/tools.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/client.js"></script>
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function() {
+            init();
+            mainLoop();
+      });
+    </script>
+</head>
+
+<body>
+    <div id="container">
+        <ul id="boardname-menu" class="nav nav-tabs">
+            <li>
+                <a id="boardname" class="not-active"></a>
+            </li>
+            <li><a id="save_btn" onclick="save_canvas()">Save</a></li>
+            <li><a id="rename_btn" data-toggle="modal" data-target="#renameModal">Rename</a></li>
+            <li><a id="leave_btn" onclick="leave_room()">Leave</a></li>
+        </ul>
+        <div id="drawingboard-wrapper">
+          <canvas id="drawingboard"></canvas>
+        </div>
+        <div id="right-nav">
+            <p style="font-size:24px"> Participants </p>
+            <ul id="participants"></ul>
+            <div id="chat">
+                <p style="font-size:24px"> Chatbox </p>
+                <ul id="messages"></ul>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="m">
+                    <span class="input-group-btn">
+                      <button class="btn btn-default" type="button" onclick="send_message();">Send!</button>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="icon-bar" id="toolbar">
+            <a data-toggle="pencil-popover" data-placement="right"><i class="fa fa-pencil"></i></a>
+            <a data-toggle="palette-popover" data-placement="right"><i class="fa fa-paint-brush"></i></a>
+            <a onclick="global.participants[global.username]['toolbox'].setCurrentTool('line')"><i class="fa fa-minus"></i></a>
+            <a onclick="global.participants[global.username]['toolbox'].setCurrentTool('rectangle')"><i class="fa fa-square"></i></a>
+            <a onclick="global.participants[global.username]['toolbox'].setCurrentTool('circle')"><i class="fa fa-circle"></i></a>
+            <a onclick="global.participants[global.username]['toolbox'].setCurrentTool('eraser')"><i class="fa fa-eraser"></i></a>
+            <a onclick="undo_board();"><i class="fa fa-undo"></i></a>
+            <a onclick="redo_board();"><i class="fa fa-repeat"></i></a>
+            <a onclick="clear_board();"><i class="fa fa-trash-o"></i></a>
+        </div>
+    </div>
+    <!-- loaded popover content -->
+    <div id="pencil-popover" class="btn-group hide">
+        <button type="button" onclick="global.participants[global.username]['toolbox'].getTool('pencil').size = 3">
+            <a><i class="fa fa-circle" style="color:black"></i></a>
+        </button>
+        <button type="button" onclick="global.participants[global.username]['toolbox'].getTool('pencil').size = 6">
+            <a><i class="fa fa-circle fa-2x" style="color:black"></i></a>
+        </button>
+        <button type="button" onclick="global.participants[global.username]['toolbox'].getTool('pencil').size = 9">
+            <a><i class="fa fa-circle fa-3x" style="color:black"></i></a>
+        </button>
+    </div>
+    <!-- Pop-up modal -->
+    <div id="myModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title"></h4>
+                </div>
+                <div class="modal-body"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal -->
+    <div id="renameModal" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-sm">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Rename board</h4>
+                </div>
+                <div class="modal-body">
+                    New name
+                    <input type="text" id="boardname_input" maxlength="10"> </input>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="update_boardname($('#boardname_input').val())">OK</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+
+</html>

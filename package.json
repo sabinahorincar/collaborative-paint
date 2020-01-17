@@ -1,0 +1,9 @@
+{
+   "name": "demo",
+   "description": "Collaborative drawing canvas",
+   "author": "Sabina",
+   "dependencies" : {
+      "express": "4.x",
+      "socket.io": "*"
+   }
+}
